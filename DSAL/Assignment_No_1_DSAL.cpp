@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <algorithm>
 using namespace std;
 
 /*
@@ -14,9 +15,12 @@ using namespace std;
 9.Mirror the treee
 10.Level order traversal*/
 template <class T>
+class Queue;
+
+template <class T>
 class QueueNode
 {
-    friend class Queue;
+    friend class Queue<T>;
     T data;
     QueueNode *next;
 
@@ -36,7 +40,8 @@ public:
 template <class T>
 class Queue
 {
-    QueueNode *front, *rear;
+    QueueNode<T> *rear;
+    QueueNode<T> *front;
     int size;
 
 public:
@@ -45,13 +50,15 @@ public:
         front = rear = nullptr;
         size = 0;
     }
-    boolean isEmpty()
+
+    bool isEmpty()
     {
         return front == nullptr && rear == nullptr;
     }
+
     void insert(T val)
     {
-        QueueNode *node = new Node(val);
+        QueueNode<T> *newNode = new QueueNode<T>(val);
         if (isEmpty())
         {
             front = rear = newNode;
@@ -63,21 +70,25 @@ public:
         }
         size++;
     }
+
     T remove()
     {
         size--;
         if (size == 0)
         {
-            return front->data;
+            T data = front->data;
             front = rear = nullptr;
+            return data;
         }
         else
         {
-            return front->next->data;
+            T data = front->data;
             front = front->next;
+            return data;
         }
     }
 };
+
 template <class T>
 class Tree;
 
@@ -86,7 +97,8 @@ class TreeNode
 {
 public:
     T data;
-    TreeNode *left, *right;
+    TreeNode<T> *left;
+    TreeNode<T> *right;
     TreeNode()
     {
         left = right = nullptr;
@@ -103,60 +115,93 @@ class Tree
 {
     TreeNode<T> *root;
     int i;
-    vector<int> preorder;
+    vector<T> preorder;
 
 public:
     Tree()
     {
-        i = -1;
+        int i = 0;
         getPreOrder(preorder);
-        root = createBinaryTree(preorder);
+        // showPre();
+        root = createBinaryTree(preorder, i);
     }
 
-    void getPreOrder(vector<int> preorder)
+    void getPreOrder(vector<T> &preorder)
     {
         cout << "Enter Preorder Sequence to generate tree" << endl;
-        int ch;
-        T val;
-        do
+        while (true)
         {
-            cout << "\n1.Add more values\n2.Stop" << endl;
-            cout << "Enter your choice :";
-            cin >> ch;
-            if (ch == 1)
+            cout << "\n1. Add more values\n2. Stop" << endl;
+            cout << "Enter your choice: ";
+            int choice;
+            cin >> choice;
+
+            if (choice == 1)
             {
+                cout << "\n1. Internal Node\n2. Leaf Node:" << endl;
                 int nodeType;
-                cout << "\n1.Internal Node\n2.Leaf Node :" << endl;
                 cin >> nodeType;
-                cout << "Enter the value :";
+
+                T val;
+                cout << "Enter the value: ";
                 cin >> val;
+
                 preorder.push_back(val);
-                if (ch == 2)
+                if (nodeType == 2)
                 {
                     preorder.push_back(-1);
+                    preorder.push_back(-1); // Marker for leaf node
                 }
             }
-            else if (ch != 2)
+            else if (choice == 2)
+            {
+                break;
+            }
+            else
             {
                 cout << "Invalid choice" << endl;
             }
-        } while (ch != 2);
+        }
     }
 
-    TreeNode *createBinaryTree(vector<int> preorder)
+    TreeNode<T> *createBinaryTree(vector<T> &preorder, int &i)
     {
-        i++;
-        if (preorder[i] == -1)
+        if (i >= preorder.size() || preorder[i] == -1)
         {
+            i++;
             return nullptr;
         }
-        TreeNode<T> *newNode = new TreeNode(preorder[i]);
-        newNode->left = createBinaryTree(preorder);
-        newNode->right = createBinaryTree(preorder);
+
+        TreeNode<T> *newNode = new TreeNode<T>(preorder[i]);
+        i++;
+
+        newNode->left = createBinaryTree(preorder, i);
+        newNode->right = createBinaryTree(preorder, i);
         return newNode;
     }
 
-    TreeNode *getRoot()
+    void showPre()
+    {
+        for (auto it = preorder.begin(); it != preorder.end(); it++)
+        {
+            cout << *it << " ";
+        }
+        cout << endl;
+    }
+
+    TreeNode<T> *copyTree(TreeNode<T> *node, TreeNode<T> *node2)
+    {
+        if (node2 == nullptr)
+        {
+            return nullptr;
+        }
+        node = new TreeNode<T>(node2->data);
+        node->left = new TreeNode<T>(node->left, node2->left);
+        node->right = new TreeNode<T>(node->right, node2->right);
+        return node;
+    }
+
+    TreeNode<T> *getRoot()
     {
         return root;
     }
@@ -168,8 +213,8 @@ public:
             return;
         }
         cout << node->data << " ";
-        preorder(node->left);
-        preorder(node->right);
+        preOrder(node->left);
+        preOrder(node->right);
     }
 
     void inorder(TreeNode<T> *node)
@@ -179,9 +224,9 @@ public:
             return;
         }
 
-        preorder(node->left);
+        inorder(node->left);
         cout << node->data << " ";
-        preorder(node->right);
+        inorder(node->right);
     }
 
     void postorder(TreeNode<T> *node)
@@ -191,8 +236,8 @@ public:
             return;
         }
 
-        preorder(node->left);
-        preorder(node->right);
+        postorder(node->left);
+        postorder(node->right);
         cout << node->data << " ";
     }
 
@@ -225,26 +270,26 @@ public:
         countNodeType(node->right, type);
     }
 
-    void mirrorTree(TreeNode<T> *node)
+    TreeNode<T> *mirrorTree(TreeNode<T> *node)
     {
         if (node == nullptr)
         {
-            return;
+            return nullptr;
         }
         TreeNode<T> *temp = node->left;
-        node->left = node->right;
-        node->right = temp;
-        mirrorTree(node->left);
-        mirrorTree(node->right);
+        node->left = mirrorTree(node->right);
+        node->right = mirrorTree(temp);
+        return node;
     }
 
     void levelOrder()
     {
-        Queue<*TreeNode<T>> q;
+        Queue<TreeNode<T> *> q;
         q.insert(root);
-        q.insert(nullptr) while (!q.isEmpty())
+        q.insert(nullptr);
+        while (!q.isEmpty())
         {
-            TreeNode *node = q.remove();
+            TreeNode<T> *node = q.remove();
             if (node == nullptr)
             {
                 cout << endl;
@@ -279,7 +324,7 @@ int main()
     int ch;
     do
     {
-        cout << "Menu\n1.Preorder\n2.Inorder\n3.Postorder\n4.Height\n5.No. of Nodes\n6.Mirror Tree\n7.Exit" << endl;
+        cout << "Menu\n1.Preorder\n2.Inorder\n3.Postorder\n4.Height\n5.No. of Nodes\n6.Mirror Tree\n7.Copy Nodes\n8.Remove leafs\n.9Exit" << endl;
         cout << "Enter your choice :";
         cin >> ch;
         TreeNode<int> *root = my.getRoot();
@@ -307,7 +352,29 @@ int main()
             cout << "External Node " << arr[0];
             cout << "Internal Node " << arr[1];
         }
+        else if (ch == 6)
+        {
+            cout << "Tree Before mirroring" << endl;
+            my.levelOrder();
+            root = my.mirrorTree(root);
+            cout << "Tree After mirroring" << endl;
+            my.levelOrder();
+        }
+        else if (ch == 7)
+        {
+            TreeNode<int> *node;
+            node = my.copyTree(node, root);
+        }
+        else if (ch == 8)
+        {
+            // remove nodes
+        }
+        else if (ch != 9)
+        {
+            cout << "Invalid choice" << endl;
+        }
+        cout << endl;
 
-    } while (ch != 7);
+    } while (ch != 9);
     return 0;
 }
