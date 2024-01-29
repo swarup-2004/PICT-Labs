@@ -76,7 +76,7 @@ public:
             {
                 cout << "Enter the value :";
                 cin >> val;
-                insert(root, val);
+                root = insert(root, val);
             }
             else if (ch != 2)
             {
@@ -97,12 +97,12 @@ public:
         // the value is less than the data at root then go to the left side of the bst
         if (node->data < val)
         {
-            node->left = insert(node->left, val);
+            node->right = insert(node->right, val);
         }
         // the value is greater than the root then go to the right side of the bst
         else
         {
-            node->right = insert(node->right, val);
+            node->left = insert(node->left, val);
         }
         return node;
     }
@@ -286,13 +286,14 @@ int main()
     BinarySearchTree my;
     TreeNode *root = my.getRoot();
 
-    cout << "Menu\n1.Insert\n2.Preorder\n3.Postorder\n4.Inorder\n5.Maximum value\n6.Minimum value\n";
-    cout << "7.Mirror Tree\n8.Height\n9.Diameter\n10.Search\n11.Exit\n";
+    
 
     int ch, val;
 
     do
     {
+        cout << "Menu\n1.Insert\n2.Preorder\n3.Postorder\n4.Inorder\n5.Maximum value\n6.Minimum value\n";
+    cout << "7.Mirror Tree\n8.Height\n9.Diameter\n10.Search\n11.Exit\n";
         cout << "Enter your choice :";
         cin >> ch;
         if (ch == 1)
