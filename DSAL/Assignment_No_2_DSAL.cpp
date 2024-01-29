@@ -250,34 +250,24 @@ public:
         }
     }
 
-    bool search(TreeNode *node, int val, int comp)
+    bool search(TreeNode *node, int val)
     {
-
-        // if the current node is null then return false;
-        if (node == nullptr)
-        {
-            cout << "Comparisons :" << comp << endl;
-            return false;
+        int comp = 0;
+        while (node != nullptr) {
+            comp++;
+            if (node->data == val) {
+                cout << "Comparisons :" << comp << endl;
+                return true;
+            }
+            else if(node->data > val) {
+                node = node->left;
+            }
+            else {
+                node = node->right;
+            }
         }
-
-        // if the data of the current node is equal to the value return true
-        if (node->data == val)
-        {
-            cout << "Comparisons :" << comp + 1 << endl;
-            return true;
-        }
-
-        // if the data of the current node is less than than the value go to the right part
-        if (node->data < val)
-        {
-            return search(node->right, val, comp + 1);
-        }
-
-        // if the data of the current node is greater than the value then go to the left part
-        else
-        {
-            return search(node->left, val, comp + 1);
-        }
+        cout << "Comparisons :" << comp << endl;
+        return false;
     }
 };
 
@@ -342,7 +332,7 @@ int main()
         {
             cout << "Enter value to search :";
             cin >> val;
-            bool ans = my.search(root, val, 0);
+            bool ans = my.search(root, val);
             if (ans)
             {
                 cout << "Value found";
