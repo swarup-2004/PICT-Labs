@@ -196,8 +196,8 @@ public:
             return nullptr;
         }
         node = new TreeNode<T>(node2->data);
-        node->left = new TreeNode<T>(node->left, node2->left);
-        node->right = new TreeNode<T>(node->right, node2->right);
+        node->left = copyTree(node->left, node2->left);
+        node->right = copyTree(node->right, node2->right);
         return node;
     }
 
@@ -282,6 +282,20 @@ public:
         return node;
     }
 
+    void remove(TreeNode<T> *node)
+    {
+        // if (root == nullptr)
+        // {
+        //     return;
+        // }
+        if (node->left == nullptr && node->right == nullptr)
+        {
+            delete node;
+        }
+        remove(node->left);
+        remove(node->right);
+    }
+
     void levelOrder()
     {
         Queue<TreeNode<T> *> q;
@@ -324,7 +338,7 @@ int main()
     int ch;
     do
     {
-        cout << "Menu\n1.Preorder\n2.Inorder\n3.Postorder\n4.Height\n5.No. of Nodes\n6.Mirror Tree\n7.Copy Nodes\n8.Remove leafs\n.9Exit" << endl;
+        cout << "Menu\n1.Preorder\n2.Inorder\n3.Postorder\n4.Height\n5.No. of Nodes\n6.Mirror Tree\n7.Copy Nodes\n8.Remove leafs\n9.Exit" << endl;
         cout << "Enter your choice :";
         cin >> ch;
         TreeNode<int> *root = my.getRoot();
@@ -367,7 +381,7 @@ int main()
         }
         else if (ch == 8)
         {
-            // remove nodes
+            my.remove(root);
         }
         else if (ch != 9)
         {
