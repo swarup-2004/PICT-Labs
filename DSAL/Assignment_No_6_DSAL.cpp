@@ -234,7 +234,7 @@ public:
                 cout << current->city << " ";
                 visited.insert(current->city);
             }
-            GraphNode *temp2 = temp->next;
+            GraphNode *temp2 = current->next;
 
             while (temp2 != nullptr)
             {
@@ -243,9 +243,10 @@ public:
                 if (vis == visited.end())
                 {
                     nextcity = temp2->city;
-                    GraphNode *temp3 = temp->down;
+                    GraphNode *temp3 = head->down;
                     while (temp3 != nullptr)
                     {
+                        string imp = temp3->city;
                         if (temp3->city == temp2->city)
                         {
                             stk.push(temp3);
