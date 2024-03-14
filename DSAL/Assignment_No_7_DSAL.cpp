@@ -137,7 +137,6 @@ public:
                     if (!visited[neighbor.dest])
                     {
                         // Push neighbor into the priority queue
-                        // Negative weight is used for minimum priority
                         pq.push(Pair(neighbor.dest, neighbor.wei));
                     }
                 }
