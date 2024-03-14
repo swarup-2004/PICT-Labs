@@ -114,7 +114,6 @@ public:
                         if (!visited[i])
                         {
                             // Push neighbor into the priority queue
-                            // Negative weight is used for minimum priority
                             pq.push(Pair(i, graph[current.office][i]));
                         }
                     }
